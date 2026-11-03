@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>T💖G TRICKS INTERNET | Premium Vault</title>
+    <title>T💖G TRICKS INTERNET | Premium files Vault</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -306,6 +306,45 @@
         }
 
         async function handleFileUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        const base64Data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileData: base64Data
+                })
+            });
+            
+            const result = await res.json();
+            if (result.success) {
+                showToast(`${file.name} uploaded!`, "green");
+            } else {
+                showToast(`Failed: ${result.error}`, "pink");
+            }
+        } catch (e) {
+            showToast("Upload failed. Check connection.", "pink");
+        }
+    }
+    loadFilesFromServer(); 
+    document.getElementById('fileInput').value = '';
+}
             const files = event.target.files;
             if (!files || files.length === 0) return;
             for (let i = 0; i < files.length; i++) {
