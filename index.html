@@ -233,6 +233,23 @@
         }
 
         async function loadFilesFromServer() {
+    const siteID = "talha-guru-tips-tricks";
+    try {
+        const url = `https://api.netlify.com/api/v1/blobs/${siteID}/documents`;
+        const res = await fetch(url, {
+             headers: { 'Authorization': `Bearer ${window.NETLIFY_TOKEN || 'YOUR_NETLIFY_TOKEN_HERE'}` }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            uploadedFiles = data.map(f => ({
+                id: f.key, name: f.key, size: "File", type: f.key.split('.').pop().toLowerCase()
+            }));
+            renderPublicFiles(); 
+            renderAdminFiles();
+        }
+    } catch (e) { console.error(e); }
+} {
             try {
                 const res = await fetch('/api/list');
                 const data = await res.json();
