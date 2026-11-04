@@ -8,7 +8,7 @@ export async function handler(event, context) {
   }
 
   try {
-    const store = getStore({ name: "documents", consistency: "strong" });
+    const store = getStore({ name: "documents" });
     
     // Parse the form data
     const boundary = event.headers['content-type'].split('boundary=')[1];
