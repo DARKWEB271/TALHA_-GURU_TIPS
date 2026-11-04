@@ -292,6 +292,40 @@
         }
 
         async function handleFileUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const siteID = "talha-guru-tips-tricks"; // Aapki site ka ID
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        try {
+            // Netlify Blob URL
+            const url = `https://api.netlify.com/api/v1/blobs/${siteID}/documents/${file.name}`;
+            
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/octet-stream',
+                    // Netlify API token yahan aayega (Step 3 mein bataya hai)
+                    'Authorization': `Bearer ${window.NETLIFY_TOKEN || 'nfp_CJhcXaTdUwzns9r1obKQ5hhDPVVdSn4nf3ad'}`
+                },
+                body: file
+            });
+
+            if (res.ok) {
+                showToast(`${file.name} uploaded!`, "green");
+            } else {
+                showToast(`Failed to upload ${file.name}`, "pink");
+            }
+        } catch (e) {
+            showToast("Upload error.", "pink");
+        }
+    }
+    loadFilesFromServer(); 
+    document.getElementById('fileInput').value = '';
+} {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
